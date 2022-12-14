@@ -22,9 +22,11 @@ for file_id in tqdm(file_id_range):
 
         filename= r.headers['Content-Disposition'].split('=')[1]
 
-        open(filepath + filename, 'wb').write(r.content)
+        if filename[-3:] == '.nc':
 
-        logging.info("Successfully accessed and saved {} to {}". format(filename, filepath))
+            open(filepath + filename, 'wb').write(r.content)
+
+            logging.info("Successfully accessed and saved {} to {}". format(filename, filepath))
 
     #sleep means you dont spam the server and potentially get banned
     sleep(1)
