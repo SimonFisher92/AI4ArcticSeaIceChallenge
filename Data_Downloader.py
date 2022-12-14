@@ -10,7 +10,7 @@ logger.setLevel(logging.INFO)
 file_id_range= list(range(37832145, 37835670, 1))
 
 #set to your filepath, including trailing '\\' (very important)
-filepath = 'C:\\Users\\Ultimate Gaming Comp\\Documents\\Ice_Data_2\\'
+filepath = 'PATH TO YOUR DATA DIRECTORY'
 
 #loops over inidividual file ids on their server
 for file_id in tqdm(file_id_range):
