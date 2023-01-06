@@ -1,0 +1,4 @@
+{"High_quality" :  ["20190401T101117_cis_prep.nc", "20190917T131550_cis_prep.nc", "20210527T211945_dmi_prep.nc"],
+  "Moderate_quality" : ["20190401T101117_cis_prep.nc", "20190917T131550_cis_prep.nc", "20210527T211945_dmi_prep.nc"],
+  "Low_quality" : ["20190401T101117_cis_prep.nc", "20190917T131550_cis_prep.nc", "20210527T211945_dmi_prep.nc"]
+}

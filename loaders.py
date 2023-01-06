@@ -27,9 +27,23 @@ from torch.utils.data import Dataset
 class AI4ArcticChallengeDataset(Dataset):
     """Pytorch dataset for loading batches of patches of scenes from the ASID V2 data set."""
 
-    def __init__(self, options, files):
+    def __init__(self, options, files, force_selection):
         self.options = options
         self.files = files
+        self.force_selection = force_selection
+
+        if self.force_selection != ['ALL_DATA']:
+            self.options['sar_variables']= [i for i in self.force_selection if i in [
+                                                                                 'nersc_sar_primary', 'nersc_sar_secondary',
+                                                                                    'sar_incidenceangle', 'distance_map']]
+
+            self.options['amsrenv_variables'] = [i for i in self.force_selection if i not in ['nersc_sar_primary',
+                                                                                  'nersc_sar_secondary',
+                                                                                  'sar_incidenceangle', 'distance_map']]
+
+        self.options['full_variables'] = self.options['sar_variables'] + ['SIC', 'SOD', 'FLOE']
+
+
 
         # Channel numbers in patches, includes reference channel.
         self.patch_c = len(self.options['train_variables']) + len(self.options['charts'])
@@ -58,7 +72,17 @@ class AI4ArcticChallengeDataset(Dataset):
         -------
         patch :
             Numpy array with shape (len(train_variables), patch_height, patch_width). None if empty patch.
+
         """
+
+        # delete these if you just want to use all data
+        self.options['full_variables'] = ['SIC', 'SOD', 'FLOE', 'nersc_sar_primary', 'nersc_sar_secondary',
+                                          'sar_incidenceangle', 'distance_map']
+        # delete these if you just want to use all data
+        self.options['amsrenv_variables'] = ['btemp_6_9h']
+
+
+
         patch = np.zeros((len(self.options['full_variables']) + len(self.options['amsrenv_variables']),
                           self.options['patch_size'], self.options['patch_size']))
         
@@ -175,10 +199,28 @@ class AI4ArcticChallengeDataset(Dataset):
 class AI4ArcticChallengeTestDataset(Dataset):
     """Pytorch dataset for loading full scenes from the ASID ready-to-train challenge dataset for inference."""
 
-    def __init__(self, options, files, test=False):
+    def __init__(self, options, files, force_selection, test=False):
         self.options = options
         self.files = files
         self.test = test
+
+        self.force_selection = force_selection
+
+        if self.force_selection != ['ALL_DATA']:
+            self.options['sar_variables'] = [i for i in self.force_selection if i in [
+                'nersc_sar_primary', 'nersc_sar_secondary',
+                'sar_incidenceangle', 'distance_map']]
+
+            self.options['amsrenv_variables'] = [i for i in self.force_selection if i not in ['nersc_sar_primary',
+                                                                                              'nersc_sar_secondary',
+                                                                                              'sar_incidenceangle',
+                                                                                              'distance_map']]
+
+        self.options['full_variables'] = self.options['sar_variables'] + ['SIC', 'SOD', 'FLOE']
+
+
+
+
 
     def __len__(self):
         """
@@ -205,6 +247,13 @@ class AI4ArcticChallengeTestDataset(Dataset):
         y :
             Dict with 3D torch tensors for each reference chart; reference inference data for x. None if test is true.
         """
+
+        # delete these if you just want to use all data
+        self.options['full_variables'] = ['SIC', 'SOD', 'FLOE', 'nersc_sar_primary', 'nersc_sar_secondary',
+                                          'sar_incidenceangle', 'distance_map']
+        # delete these if you just want to use all data
+        self.options['amsrenv_variables'] = ['btemp_6_9h']
+
         x = torch.cat((torch.from_numpy(scene[self.options['sar_variables']].to_array().values).unsqueeze(0),
                       torch.nn.functional.interpolate(
                           input=torch.from_numpy(scene[self.options['amsrenv_variables']].to_array().values).unsqueeze(0),
